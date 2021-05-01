@@ -42,6 +42,7 @@ func file_size(file string, size string) string {
 	}
 	return ""
 }
+
 func defult(path string, size string, size_check bool) {
 
 	files, err := ioutil.ReadDir(path)
@@ -58,7 +59,7 @@ func defult(path string, size string, size_check bool) {
 
 			if info.IsDir() {
 				B.Print(f.Name())
-				C.Print(" " + file_size(f.Name(), size) + "\n")
+				C.Print(DirSize(f.Name(), size), "\n")
 			} else {
 				G.Print(f.Name())
 				C.Print(" " + file_size(f.Name(), size) + "\n")
@@ -78,6 +79,32 @@ func defult(path string, size string, size_check bool) {
 
 		}
 	}
+}
+
+func DirSize(path string, size_input string) string {
+	var size int64
+	size_input = strings.ToUpper(size_input)
+	_ = filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			size += info.Size()
+		}
+		return err
+	})
+	if size_input == "KB" {
+
+		return strconv.FormatInt(size/1000, 10) + "KB"
+	}
+	if size_input == "MB" {
+		return strconv.FormatInt((size/1024)/1024, 10) + "MB"
+	}
+	if size_input == "GB" {
+		return strconv.FormatInt(((size/1024)/1024)/1024, 10) + "GB"
+	}
+
+	return "0"
 }
 
 func file_all(path_set string, size string) {
